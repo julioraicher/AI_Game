@@ -1,3 +1,5 @@
+"""Arquivo feito para testar tamanho e proporções de imagens"""
+
 import pygame
 import os
 import random
