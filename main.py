@@ -3,7 +3,7 @@ import os
 # import random
 
 
-pygame.init()  # precisa disso?
+# pygame.init()  # precisa disso?
 
 
 # ir testando esses valores
@@ -36,7 +36,7 @@ class Nave:
 
     def desenhar(self, tela):
         imagem = self.imagem
-        pos_centro_imagem = self.imagem.get_rect(topleft=(self.x, self.y)).center
+        # pos_centro_imagem = self.imagem.get_rect(topleft=(self.x, self.y)).center
         retangulo = imagem.get_rect(topleft=(self.x, self.y))
         tela.blit(imagem, retangulo.topleft)
         pygame.display.update()
@@ -45,6 +45,8 @@ class Nave:
         return pygame.mask.from_surface(self.imagem)
 
 
+class Meteoro:
+    pass
 
 
 tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
@@ -98,4 +100,5 @@ while True:
             last_key_repeat_time = pygame.time.get_ticks()
 
     pygame.time.Clock().tick(30)
+    tela.blit(IMAGEM_BACKGROUND, (0, 0))
     xwing.desenhar(tela)
