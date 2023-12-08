@@ -13,6 +13,7 @@ IMAGEM_LASER = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'la
 
 
 class Nave:
+
     def __int__(self, x, y):
         self.x = x
         self.y = y
@@ -35,3 +36,40 @@ class Nave:
     def mover(self):
         self.x += self.vel_x
         self.y += self.vel_y
+
+    def desenhar(self, tela):
+        imagem = IMAGEM_NAVE
+        pos_centro_imagem = self.imagem.get_rect(topleft=(self.x, self.y)).center
+        retangulo = imagem.get_rect(topleft=(self.x, self.y))
+        tela.blit(imagem, retangulo.topleft)
+        pygame.display.update()
+
+    def get_mask(self):
+        return pygame.mask.from_surface(self.imagem)
+
+
+
+def main():
+    tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
+    xwing = Nave(0, 0)
+    rodando = True
+    while True:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                rodando = False
+                pygame.quit()
+                quit()
+            if evento.type == pygame.KEYDOWN:
+                # Verifica se a tecla pressionada é a tecla desejada
+                if evento.key == pygame.K_w:  # ir p cima
+                    xwing.mover_p_cima()
+                if evento.key == pygame.K_s:
+                    xwing.mover_p_baixo()
+                if evento.key == pygame.K_d:
+                    xwing.mover_p_direita()
+                if evento.key == pygame.K_a:
+                    xwing.mover_p_esquerda()
+        xwing.mover()
+        xwing.desenhar(tela)
+
+main()
