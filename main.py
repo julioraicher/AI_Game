@@ -1,6 +1,10 @@
 import pygame
 import os
-import random
+# import random
+
+
+pygame.init()  # precisa disso?
+
 
 # ir testando esses valores
 TELA_LARGURA = 1200
@@ -13,29 +17,22 @@ IMAGEM_LASER = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'la
 
 
 class Nave:
-
-    def __int__(self, x, y):
-        self.x = x
-        self.y = y
-        self.vel_y = 0
-        self.vel_x = 0
-        self.imagem = IMAGEM_NAVE
+    imagem = IMAGEM_NAVE
+    def __int__(self):
+        self.x = 0
+        self.y = 0
 
     def mover_p_cima(self):
-        self.vel_y = -10
+        self.y -= 10
 
     def mover_p_baixo(self):
-        self.vel_y = 10
+        self.y += 10
 
     def mover_p_direita(self):
-        self.vel_x = 15
+        self.x += 15
 
     def mover_p_esquerda(self):  # fazer uma velocidade menor do que a da direita
-        self.vel_x = -7
-
-    def mover(self):
-        self.x += self.vel_x
-        self.y += self.vel_y
+        self.x -= 10
 
     def desenhar(self, tela):
         imagem = IMAGEM_NAVE
@@ -49,27 +46,56 @@ class Nave:
 
 
 
-def main():
-    tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
-    xwing = Nave(0, 0)
-    rodando = True
-    while True:
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                rodando = False
-                pygame.quit()
-                quit()
-            if evento.type == pygame.KEYDOWN:
-                # Verifica se a tecla pressionada é a tecla desejada
-                if evento.key == pygame.K_w:  # ir p cima
-                    xwing.mover_p_cima()
-                if evento.key == pygame.K_s:
-                    xwing.mover_p_baixo()
-                if evento.key == pygame.K_d:
-                    xwing.mover_p_direita()
-                if evento.key == pygame.K_a:
-                    xwing.mover_p_esquerda()
-        xwing.mover()
-        xwing.desenhar(tela)
 
-main()
+tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
+xwing = Nave()
+xwing.x = 300
+xwing.y = 300
+
+# Variáveis para controlar a repetição da tecla
+w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
+repeat_interval = 10  # Intervalo em milissegundos para repetição
+last_key_repeat_time = 0
+
+rodando = True
+while True:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            rodando = False
+            pygame.quit()
+            quit()
+        elif evento.type == pygame.KEYDOWN:
+            # Verifica se a tecla pressionada é a tecla desejada
+            if evento.key == pygame.K_w:  # ir p cima
+                w_pressionada = True
+            if evento.key == pygame.K_s:
+                s_pressionada = True
+            if evento.key == pygame.K_d:
+                d_pressionada = True
+            if evento.key == pygame.K_a:
+                a_pressionada = True
+        elif evento.type == pygame.KEYUP:
+            if evento.key == pygame.K_w:  # ir p cima
+                w_pressionada = False
+            if evento.key == pygame.K_s:
+                s_pressionada = False
+            if evento.key == pygame.K_d:
+                d_pressionada = False
+            if evento.key == pygame.K_a:
+                a_pressionada = False
+
+    if a_pressionada or  w_pressionada or s_pressionada or d_pressionada:
+        if pygame.time.get_ticks() - last_key_repeat_time > repeat_interval:
+            if w_pressionada:
+                xwing.mover_p_cima()
+            if s_pressionada:
+                xwing.mover_p_baixo()
+            if d_pressionada:
+                xwing.mover_p_direita()
+            if a_pressionada:
+                xwing.mover_p_esquerda()
+
+            last_key_repeat_time = pygame.time.get_ticks()
+
+    pygame.time.Clock().tick(30)
+    xwing.desenhar(tela)
