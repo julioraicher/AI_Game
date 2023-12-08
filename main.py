@@ -35,7 +35,7 @@ class Nave:
         self.x -= 10
 
     def desenhar(self, tela):
-        imagem = IMAGEM_NAVE
+        imagem = self.imagem
         pos_centro_imagem = self.imagem.get_rect(topleft=(self.x, self.y)).center
         retangulo = imagem.get_rect(topleft=(self.x, self.y))
         tela.blit(imagem, retangulo.topleft)
