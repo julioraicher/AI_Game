@@ -67,6 +67,14 @@ class Meteoro:
     def get_mask(self):
         return pygame.mask.from_surface(self.imagem)
 
+    def colisao(self, objeto):
+        pass
+        # objeto_mask = objeto.get_mask()
+        # meteoro_mask = self.get_mask()
+
+
+
+
 
 # iniciando a tela do jogo
 tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
@@ -74,8 +82,8 @@ tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 # Iniciando a nave
 xwing = Nave(300, 300)
 
-# Criando um meteoro
-meteoro = Meteoro(1200, random.randrange(0, 600 - IMAGEM_METEORO.get_height() * 2))
+# Criando um meteoros
+meteoros = [Meteoro(1200, random.randrange(0, 600 - IMAGEM_METEORO.get_height() * 2))]
 
 # Variáveis para controlar a repetição da tecla
 w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
@@ -125,3 +133,9 @@ while True:
     pygame.time.Clock().tick(30)
     tela.blit(IMAGEM_BACKGROUND, (0, 0))
     xwing.desenhar(tela)
+
+    # cada meteoro da lista meteoros se move e desenha na tela
+    for i in range(len(meteoros)):
+        meteoros[i].mover_p_esquerda()
+        meteoros[i].desenhar(tela)
+
