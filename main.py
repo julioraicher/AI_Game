@@ -18,9 +18,9 @@ IMAGEM_LASER = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'la
 
 class Nave:
     imagem = IMAGEM_NAVE
-    def __int__(self):
-        self.x = 0
-        self.y = 0
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
     def mover_p_cima(self):
         self.y -= 10
@@ -50,9 +50,8 @@ class Meteoro:
 
 
 tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
-xwing = Nave()
-xwing.x = 300
-xwing.y = 300
+xwing = Nave(300, 300)
+
 
 # Variáveis para controlar a repetição da tecla
 w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
@@ -86,7 +85,7 @@ while True:
             if evento.key == pygame.K_a:
                 a_pressionada = False
 
-    if a_pressionada or  w_pressionada or s_pressionada or d_pressionada:
+    if a_pressionada or w_pressionada or s_pressionada or d_pressionada:
         if pygame.time.get_ticks() - last_key_repeat_time > repeat_interval:
             if w_pressionada:
                 xwing.mover_p_cima()
