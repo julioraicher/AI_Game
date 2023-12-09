@@ -1,5 +1,8 @@
+import random
+
 import pygame
 import os
+
 # import random
 
 
@@ -18,6 +21,7 @@ IMAGEM_LASER = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'la
 
 class Nave:
     imagem = IMAGEM_NAVE
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -46,12 +50,32 @@ class Nave:
 
 
 class Meteoro:
-    pass
+    imagem = IMAGEM_METEORO
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def mover_p_esquerda(self):
+        self.x -= 10  # (mesma velocidade da nave indo p esquerda)
+
+    def desenhar(self, tela):
+        imagem = self.imagem
+        tela.blit(imagem, (self.x, self.y))
+        pygame.display.update()
+
+    def get_mask(self):
+        return pygame.mask.from_surface(self.imagem)
 
 
+# iniciando a tela do jogo
 tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
+
+# Iniciando a nave
 xwing = Nave(300, 300)
 
+# Criando um meteoro
+meteoro = Meteoro(1200, random.randrange(0, 600 - IMAGEM_METEORO.get_height() * 2))
 
 # Variáveis para controlar a repetição da tecla
 w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
