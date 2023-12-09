@@ -51,9 +51,9 @@ class Nave:
 class Meteoro:
     imagem = IMAGEM_METEORO
 
-    def __init__(self, x, y):
+    def __init__(self, x):
         self.x = x
-        self.y = y
+        self.y = random.randrange(0, 600 - self.imagem.get_height() * 2)
 
     def mover_p_esquerda(self):
         self.x -= 10  # (mesma velocidade da nave indo p esquerda)
@@ -87,7 +87,7 @@ tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 xwing = Nave(300, 300)
 
 # Criando um meteoros
-meteoros = [Meteoro(1200, random.randrange(0, 600 - IMAGEM_METEORO.get_height() * 2))]
+meteoros = [Meteoro(1200), Meteoro(1200)]
 
 # Variáveis para controlar a repetição da tecla
 w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
