@@ -43,7 +43,6 @@ class Nave:
         # pos_centro_imagem = self.imagem.get_rect(topleft=(self.x, self.y)).center
         retangulo = imagem.get_rect(topleft=(self.x, self.y))
         tela.blit(imagem, retangulo.topleft)
-        pygame.display.update()
 
     def get_mask(self):
         return pygame.mask.from_surface(self.imagem)
@@ -62,7 +61,6 @@ class Meteoro:
     def desenhar(self, tela):
         imagem = self.imagem
         tela.blit(imagem, (self.x, self.y))
-        pygame.display.update()
 
     def get_mask(self):
         return pygame.mask.from_surface(self.imagem)
@@ -73,7 +71,13 @@ class Meteoro:
         # meteoro_mask = self.get_mask()
 
 
-
+def desenhar_na_tela(tela, bg, nave, meteoros):
+    tela.blit(bg, (0, 0))
+    nave.desenhar(tela)
+    # desenha cada meteoro na tela
+    for i in range(len(meteoros)):
+        meteoros[i].desenhar(tela)
+    pygame.display.update()
 
 
 # iniciando a tela do jogo
@@ -131,11 +135,9 @@ while True:
             last_key_repeat_time = pygame.time.get_ticks()
 
     pygame.time.Clock().tick(30)
-    tela.blit(IMAGEM_BACKGROUND, (0, 0))
-    xwing.desenhar(tela)
 
-    # cada meteoro da lista meteoros se move e desenha na tela
+    # cada meteoro da lista meteoros se move
     for i in range(len(meteoros)):
         meteoros[i].mover_p_esquerda()
-        meteoros[i].desenhar(tela)
 
+    desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros)
