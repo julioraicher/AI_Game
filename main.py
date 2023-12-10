@@ -68,12 +68,30 @@ class Meteoro:
         # meteoro_mask = self.get_mask()
 
 
-def desenhar_na_tela(tela, bg, nave, meteoros):
+class Laser:
+    imagem = IMAGEM_LASER
+
+    def __init__(self, x0, y0):
+        self.x = x0
+        self.y = y0
+
+    def mover(self):
+        self.x += 25  # testar essa velocidade
+
+    def desenhar(self):
+        imagem = self.imagem
+        tela.blit(imagem, (self.x, self.y))
+
+
+def desenhar_na_tela(tela, bg, nave, meteoros, lasers):
     tela.blit(bg, (0, 0))
     nave.desenhar(tela)
     # desenha cada meteoro na tela
-    for i in range(len(meteoros)):
-        meteoros[i].desenhar(tela)
+    for meteoro in meteoros:
+        meteoro.desenhar(tela)
+    for laser in lasers:
+        laser.desenhar()
+
     pygame.display.update()
 
 
@@ -83,8 +101,11 @@ tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 # Iniciando a nave
 xwing = Nave(300, 300)
 
-# Criando um meteoros
+# Criando meteoros
 meteoros = []
+
+# Criando lasers
+lasers = []
 
 # Variáveis para controlar a repetição da tecla
 w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
@@ -92,6 +113,7 @@ repeat_interval = 10  # Intervalo em milissegundos para repetição
 last_key_repeat_time = 0
 
 cont_met = 60  # contador de frames p ajudar na criação de meteoros
+cont_laser = 30
 rodando = True
 while rodando:
     for evento in pygame.event.get():
@@ -138,11 +160,9 @@ while rodando:
     if cont_met >= 60:
         cont_met = 0
         meteoros.append(Meteoro(1200))
-
     # cada meteoro da lista meteoros se move
     for meteoro in meteoros:
         meteoro.mover_p_esquerda()
-
     # tira os meteoros da lista
     remover_meteoros = []
     for meteoro in meteoros:
@@ -151,8 +171,23 @@ while rodando:
     for meteoro in remover_meteoros:
         meteoros.remove(meteoro)
 
+    # criar lasers de tempo em tempo
+    if cont_laser >= 30:
+        cont_laser = 0
+        lasers.append(Laser(xwing.x, xwing.y))
+    # cada laser se move
+    for laser in lasers:
+        laser.mover()
+    # remove os lasers da lista (solução provisória até ter colisão)
+    remover_lasers = []
+    for laser in lasers:
+        if laser.x >= 1185:
+            remover_lasers.append(laser)
+    for laser in remover_lasers:
+        lasers.remove(laser)
 
 
 
     cont_met += 1
-    desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros)
+    cont_laser += 1
+    desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros, lasers)
