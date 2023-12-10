@@ -2,7 +2,6 @@ import pygame
 import os
 import random
 
-
 # pygame.init()  # precisa disso?
 
 
@@ -62,18 +61,19 @@ class Meteoro:
     def get_mask(self):
         return pygame.mask.from_surface(self.imagem)
 
-    def colisao(self, objeto):
-        pass
-        # objeto_mask = objeto.get_mask()
-        # meteoro_mask = self.get_mask()
+    def colidir(self, objeto):
+        objeto_mask = objeto.get_mask()
+        meteoro_mask = self.get_mask()
+        colidiu = objeto_mask.overlap(meteoro_mask, (self.x - objeto.x, self.y - objeto.y))  # True ou False (?)
+        return colidiu
 
 
 class Laser:
     imagem = IMAGEM_LASER
 
-    def __init__(self, x0, y0):
-        self.x = x0
-        self.y = y0
+    def __init__(self, nave):
+        self.x = nave.x + nave.imagem.get_width() - 20
+        self.y = round(nave.imagem.get_height() / 2 + nave.y - 7)
 
     def mover(self):
         self.x += 25  # testar essa velocidade
@@ -81,6 +81,9 @@ class Laser:
     def desenhar(self):
         imagem = self.imagem
         tela.blit(imagem, (self.x, self.y))
+
+    def get_mask(self):
+        return pygame.mask.from_surface(self.imagem)
 
 
 def desenhar_na_tela(tela, bg, nave, meteoros, lasers):
@@ -154,7 +157,6 @@ while rodando:
 
             last_key_repeat_time = pygame.time.get_ticks()
 
-    pygame.time.Clock().tick(30)
 
     # criar meteoros a cada (intervalo de tempo)
     if cont_met >= 60:
@@ -170,11 +172,23 @@ while rodando:
             remover_meteoros.append(meteoro)
     for meteoro in remover_meteoros:
         meteoros.remove(meteoro)
+    # verificar colisao com laser e ja remover o meteoro e o laser
+    remover_meteoros = []
+    remover_lasers = []
+    for meteoro in meteoros:
+        for laser in lasers:
+            if meteoro.colidir(laser):
+                remover_meteoros.append(meteoro)
+                remover_lasers.append(laser)
+    for meteoro in remover_meteoros:
+        meteoros.remove(meteoro)
+    for laser in remover_lasers:
+        lasers.remove(laser)
 
     # criar lasers de tempo em tempo
     if cont_laser >= 30:
         cont_laser = 0
-        lasers.append(Laser(xwing.x, xwing.y))
+        lasers.append(Laser(xwing))
     # cada laser se move
     for laser in lasers:
         laser.mover()
@@ -190,4 +204,5 @@ while rodando:
 
     cont_met += 1
     cont_laser += 1
+    pygame.time.Clock().tick(30)  # 30 fps
     desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros, lasers)
