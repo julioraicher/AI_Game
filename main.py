@@ -97,6 +97,7 @@ def desenhar_na_tela(tela, bg, nave, meteoros, lasers):
 
     pygame.display.update()
 
+
 def main():
     # iniciando a tela do jogo
     tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
@@ -161,7 +162,7 @@ def main():
         # criar meteoros a cada (intervalo de tempo)
         if cont_met >= 60:
             cont_met = 0
-            meteoros.append(Meteoro(1200))
+            meteoros.append(Meteoro(800))
         # cada meteoro da lista meteoros se move
         for meteoro in meteoros:
             meteoro.mover_p_esquerda()
@@ -184,6 +185,11 @@ def main():
             meteoros.remove(meteoro)
         for laser in remover_lasers:
             lasers.remove(laser)
+        # verificar colisao com nave
+        remover_meteoros = []
+        for meteoro in meteoros:
+            if meteoro.colidir(xwing):
+                rodando = False
 
         # criar lasers de tempo em tempo
         if cont_laser >= 30:
@@ -201,10 +207,11 @@ def main():
             lasers.remove(laser)
 
 
-
         cont_met += 1
         cont_laser += 1
         pygame.time.Clock().tick(30)  # 30 fps
         desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros, lasers)
 
-main()
+
+if __name__ == '__main__':
+    main()
