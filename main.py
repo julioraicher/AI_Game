@@ -1,9 +1,6 @@
-import random
-
 import pygame
 import os
-
-# import random
+import random
 
 
 # pygame.init()  # precisa disso?
@@ -87,15 +84,16 @@ tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 xwing = Nave(300, 300)
 
 # Criando um meteoros
-meteoros = [Meteoro(1200), Meteoro(1200)]
+meteoros = []
 
 # Variáveis para controlar a repetição da tecla
 w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
 repeat_interval = 10  # Intervalo em milissegundos para repetição
 last_key_repeat_time = 0
 
+cont_met = 60  # contador de frames p ajudar na criação de meteoros
 rodando = True
-while True:
+while rodando:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
@@ -136,8 +134,25 @@ while True:
 
     pygame.time.Clock().tick(30)
 
-    # cada meteoro da lista meteoros se move
-    for i in range(len(meteoros)):
-        meteoros[i].mover_p_esquerda()
+    # criar meteoros a cada (intervalo de tempo)
+    if cont_met >= 60:
+        cont_met = 0
+        meteoros.append(Meteoro(1200))
 
+    # cada meteoro da lista meteoros se move
+    for meteoro in meteoros:
+        meteoro.mover_p_esquerda()
+
+    # tira os meteoros da lista
+    remover_meteoros = []
+    for meteoro in meteoros:
+        if meteoro.x <= meteoro.imagem.get_width() * (-1):
+            remover_meteoros.append(meteoro)
+    for meteoro in remover_meteoros:
+        meteoros.remove(meteoro)
+
+
+
+
+    cont_met += 1
     desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros)
