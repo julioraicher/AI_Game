@@ -206,7 +206,7 @@ def main():
         for laser in remover_lasers:
             lasers.remove(laser)
 
-        # delimitar as paredes na horizontal e vertical
+        # delimitar a posição da nave
         if xwing.x >= 1125:
             xwing.x = 1125
         if xwing.x <= 0:
@@ -215,6 +215,7 @@ def main():
             xwing.y = 550
         if xwing.y <= -25:
             xwing.y = -25
+        
 
 
         cont_met += 1
