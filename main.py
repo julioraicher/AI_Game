@@ -23,10 +23,10 @@ class Nave:
         self.y = y
 
     def mover_p_cima(self):
-        self.y -= 10
+        self.y -= 15
 
     def mover_p_baixo(self):
-        self.y += 10
+        self.y += 15
 
     def mover_p_direita(self):
         self.x += 15
@@ -165,7 +165,7 @@ def main():
 
 
         # criar meteoros a cada (intervalo de tempo)
-        if cont_met >= 60:
+        if cont_met >= 30:
             cont_met = 0
             meteoros.append(Meteoro(1200))
         # cada meteoro da lista meteoros se move
@@ -197,7 +197,7 @@ def main():
                 rodando = False
 
         # criar lasers de tempo em tempo
-        if cont_laser >= 30:
+        if cont_laser >= 15:
             cont_laser = 0
             lasers.append(Laser(xwing))
         # cada laser se move
