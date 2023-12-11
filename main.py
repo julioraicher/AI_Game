@@ -162,7 +162,7 @@ def main():
         # criar meteoros a cada (intervalo de tempo)
         if cont_met >= 60:
             cont_met = 0
-            meteoros.append(Meteoro(800))
+            meteoros.append(Meteoro(1200))
         # cada meteoro da lista meteoros se move
         for meteoro in meteoros:
             meteoro.mover_p_esquerda()
@@ -205,6 +205,16 @@ def main():
                 remover_lasers.append(laser)
         for laser in remover_lasers:
             lasers.remove(laser)
+
+        # delimitar as paredes na horizontal e vertical
+        if xwing.x >= 1125:
+            xwing.x = 1125
+        if xwing.x <= 0:
+            xwing.x = 0
+        if xwing.y >= 550:
+            xwing.y = 550
+        if xwing.y <= -25:
+            xwing.y = -25
 
 
         cont_met += 1
