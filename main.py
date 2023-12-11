@@ -15,6 +15,7 @@ IMAGEM_LASER = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'la
 pygame.font.init()
 FONTE_PONTOS = pygame.font.SysFont('arial', 50)
 
+
 class Nave:
     imagem = IMAGEM_NAVE
 
@@ -120,8 +121,8 @@ def main():
     repeat_interval = 10  # Intervalo em milissegundos para repetição
     last_key_repeat_time = 0
 
-    cont_met = 60  # contador de frames p ajudar na criação de meteoros
-    cont_laser = 30
+    cont_met = 40  # contador de frames p ajudar na criação de meteoros
+    cont_laser = 20
     pontos = 0
     rodando = True
     while rodando:
@@ -165,7 +166,7 @@ def main():
 
 
         # criar meteoros a cada (intervalo de tempo)
-        if cont_met >= 30:
+        if cont_met >= 40:
             cont_met = 0
             meteoros.append(Meteoro(1200))
         # cada meteoro da lista meteoros se move
@@ -197,7 +198,7 @@ def main():
                 rodando = False
 
         # criar lasers de tempo em tempo
-        if cont_laser >= 15:
+        if cont_laser >= 20:
             cont_laser = 0
             lasers.append(Laser(xwing))
         # cada laser se move
@@ -212,14 +213,19 @@ def main():
             lasers.remove(laser)
 
         # delimitar a posição da nave
-        if xwing.x >= 1125:
-            xwing.x = 1125
+        if xwing.x >= TELA_LARGURA - xwing.imagem.get_width():
+            xwing.x = TELA_LARGURA - xwing.imagem.get_width()
         if xwing.x <= 0:
             xwing.x = 0
-        if xwing.y >= 550:
-            xwing.y = 550
-        if xwing.y <= -25:
-            xwing.y = -25
+        if xwing.y >= TELA_ALTURA - xwing.imagem.get_height()/2:
+            xwing.y = TELA_ALTURA - xwing.imagem.get_height()/2
+        if xwing.y <= -xwing.imagem.get_height()/2:
+            xwing.y = -xwing.imagem.get_height()/2
+
+        # verifica se algum meteoro passou até o final
+        for meteoro in meteoros:
+            if meteoro.x == 0:
+                rodando = False
 
 
         cont_met += 1
