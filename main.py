@@ -78,7 +78,7 @@ class Laser:
     def mover(self):
         self.x += 25  # testar essa velocidade
 
-    def desenhar(self):
+    def desenhar(self, tela):
         imagem = self.imagem
         tela.blit(imagem, (self.x, self.y))
 
@@ -93,116 +93,136 @@ def desenhar_na_tela(tela, bg, nave, meteoros, lasers):
     for meteoro in meteoros:
         meteoro.desenhar(tela)
     for laser in lasers:
-        laser.desenhar()
+        laser.desenhar(tela)
 
     pygame.display.update()
 
 
-# iniciando a tela do jogo
-tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
+def main():
+    # iniciando a tela do jogo
+    tela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 
-# Iniciando a nave
-xwing = Nave(300, 300)
+    # Iniciando a nave
+    xwing = Nave(300, 300)
 
-# Criando meteoros
-meteoros = []
+    # Criando meteoros
+    meteoros = []
 
-# Criando lasers
-lasers = []
+    # Criando lasers
+    lasers = []
 
-# Variáveis para controlar a repetição da tecla
-w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
-repeat_interval = 10  # Intervalo em milissegundos para repetição
-last_key_repeat_time = 0
+    # Variáveis para controlar a repetição da tecla
+    w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
+    repeat_interval = 10  # Intervalo em milissegundos para repetição
+    last_key_repeat_time = 0
 
-cont_met = 60  # contador de frames p ajudar na criação de meteoros
-cont_laser = 30
-rodando = True
-while rodando:
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            rodando = False
-            pygame.quit()
-            quit()
-        elif evento.type == pygame.KEYDOWN:
-            # Verifica se a tecla pressionada é a tecla desejada
-            if evento.key == pygame.K_w:  # ir p cima
-                w_pressionada = True
-            if evento.key == pygame.K_s:
-                s_pressionada = True
-            if evento.key == pygame.K_d:
-                d_pressionada = True
-            if evento.key == pygame.K_a:
-                a_pressionada = True
-        elif evento.type == pygame.KEYUP:
-            if evento.key == pygame.K_w:  # ir p cima
-                w_pressionada = False
-            if evento.key == pygame.K_s:
-                s_pressionada = False
-            if evento.key == pygame.K_d:
-                d_pressionada = False
-            if evento.key == pygame.K_a:
-                a_pressionada = False
+    cont_met = 60  # contador de frames p ajudar na criação de meteoros
+    cont_laser = 30
+    rodando = True
+    while rodando:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                rodando = False
+                pygame.quit()
+                quit()
+            elif evento.type == pygame.KEYDOWN:
+                # Verifica se a tecla pressionada é a tecla desejada
+                if evento.key == pygame.K_w:  # ir p cima
+                    w_pressionada = True
+                if evento.key == pygame.K_s:
+                    s_pressionada = True
+                if evento.key == pygame.K_d:
+                    d_pressionada = True
+                if evento.key == pygame.K_a:
+                    a_pressionada = True
+            elif evento.type == pygame.KEYUP:
+                if evento.key == pygame.K_w:  # ir p cima
+                    w_pressionada = False
+                if evento.key == pygame.K_s:
+                    s_pressionada = False
+                if evento.key == pygame.K_d:
+                    d_pressionada = False
+                if evento.key == pygame.K_a:
+                    a_pressionada = False
 
-    if a_pressionada or w_pressionada or s_pressionada or d_pressionada:
-        if pygame.time.get_ticks() - last_key_repeat_time > repeat_interval:
-            if w_pressionada:
-                xwing.mover_p_cima()
-            if s_pressionada:
-                xwing.mover_p_baixo()
-            if d_pressionada:
-                xwing.mover_p_direita()
-            if a_pressionada:
-                xwing.mover_p_esquerda()
+        if a_pressionada or w_pressionada or s_pressionada or d_pressionada:
+            if pygame.time.get_ticks() - last_key_repeat_time > repeat_interval:
+                if w_pressionada:
+                    xwing.mover_p_cima()
+                if s_pressionada:
+                    xwing.mover_p_baixo()
+                if d_pressionada:
+                    xwing.mover_p_direita()
+                if a_pressionada:
+                    xwing.mover_p_esquerda()
 
-            last_key_repeat_time = pygame.time.get_ticks()
+                last_key_repeat_time = pygame.time.get_ticks()
 
 
-    # criar meteoros a cada (intervalo de tempo)
-    if cont_met >= 60:
-        cont_met = 0
-        meteoros.append(Meteoro(1200))
-    # cada meteoro da lista meteoros se move
-    for meteoro in meteoros:
-        meteoro.mover_p_esquerda()
-    # tira os meteoros da lista
-    remover_meteoros = []
-    for meteoro in meteoros:
-        if meteoro.x <= meteoro.imagem.get_width() * (-1):
-            remover_meteoros.append(meteoro)
-    for meteoro in remover_meteoros:
-        meteoros.remove(meteoro)
-    # verificar colisao com laser e ja remover o meteoro e o laser
-    remover_meteoros = []
-    remover_lasers = []
-    for meteoro in meteoros:
-        for laser in lasers:
-            if meteoro.colidir(laser):
+        # criar meteoros a cada (intervalo de tempo)
+        if cont_met >= 60:
+            cont_met = 0
+            meteoros.append(Meteoro(1200))
+        # cada meteoro da lista meteoros se move
+        for meteoro in meteoros:
+            meteoro.mover_p_esquerda()
+        # tira os meteoros da lista
+        remover_meteoros = []
+        for meteoro in meteoros:
+            if meteoro.x <= meteoro.imagem.get_width() * (-1):
                 remover_meteoros.append(meteoro)
+        for meteoro in remover_meteoros:
+            meteoros.remove(meteoro)
+        # verificar colisao com laser e ja remover o meteoro e o laser
+        remover_meteoros = []
+        remover_lasers = []
+        for meteoro in meteoros:
+            for laser in lasers:
+                if meteoro.colidir(laser):
+                    remover_meteoros.append(meteoro)
+                    remover_lasers.append(laser)
+        for meteoro in remover_meteoros:
+            meteoros.remove(meteoro)
+        for laser in remover_lasers:
+            lasers.remove(laser)
+        # verificar colisao com nave
+        remover_meteoros = []
+        for meteoro in meteoros:
+            if meteoro.colidir(xwing):
+                rodando = False
+
+        # criar lasers de tempo em tempo
+        if cont_laser >= 30:
+            cont_laser = 0
+            lasers.append(Laser(xwing))
+        # cada laser se move
+        for laser in lasers:
+            laser.mover()
+        # remove os lasers da lista (solução provisória até ter colisão)
+        remover_lasers = []
+        for laser in lasers:
+            if laser.x >= 1185:
                 remover_lasers.append(laser)
-    for meteoro in remover_meteoros:
-        meteoros.remove(meteoro)
-    for laser in remover_lasers:
-        lasers.remove(laser)
+        for laser in remover_lasers:
+            lasers.remove(laser)
 
-    # criar lasers de tempo em tempo
-    if cont_laser >= 30:
-        cont_laser = 0
-        lasers.append(Laser(xwing))
-    # cada laser se move
-    for laser in lasers:
-        laser.mover()
-    # remove os lasers da lista (solução provisória até ter colisão)
-    remover_lasers = []
-    for laser in lasers:
-        if laser.x >= 1185:
-            remover_lasers.append(laser)
-    for laser in remover_lasers:
-        lasers.remove(laser)
+        # delimitar a posição da nave
+        if xwing.x >= 1125:
+            xwing.x = 1125
+        if xwing.x <= 0:
+            xwing.x = 0
+        if xwing.y >= 550:
+            xwing.y = 550
+        if xwing.y <= -25:
+            xwing.y = -25
+        
 
 
+        cont_met += 1
+        cont_laser += 1
+        pygame.time.Clock().tick(30)  # 30 fps
+        desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros, lasers)
 
-    cont_met += 1
-    cont_laser += 1
-    pygame.time.Clock().tick(30)  # 30 fps
-    desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros, lasers)
+
+if __name__ == '__main__':
+    main()
