@@ -3,7 +3,8 @@ import os
 import random
 
 
-# ir testando esses valores
+pygame.init()
+
 TELA_LARGURA = 1200
 TELA_ALTURA = 600
 
@@ -12,6 +13,7 @@ IMAGEM_BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join('imgs'
 IMAGEM_METEORO = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'meteoro.png')), (70, 45))
 IMAGEM_LASER = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'laser.png')), (20, 20))
 
+# iniciando a fonte q vai escrever a pontuação na tela
 pygame.font.init()
 FONTE_PONTOS = pygame.font.SysFont('arial', 50)
 
@@ -37,9 +39,7 @@ class Nave:
 
     def desenhar(self, tela):
         imagem = self.imagem
-        # pos_centro_imagem = self.imagem.get_rect(topleft=(self.x, self.y)).center
-        retangulo = imagem.get_rect(topleft=(self.x, self.y))
-        tela.blit(imagem, retangulo.topleft)
+        tela.blit(imagem, (self.x, self.y))
 
     def get_mask(self):
         return pygame.mask.from_surface(self.imagem)
