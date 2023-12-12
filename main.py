@@ -35,7 +35,7 @@ class Nave:
         self.x += 15
 
     def mover_p_esquerda(self):  # fazer uma velocidade menor do que a da direita
-        self.x -= 10
+        self.x -= 15
 
     def desenhar(self, tela):
         imagem = self.imagem
