@@ -9,7 +9,7 @@ TELA_LARGURA = 1200
 TELA_ALTURA = 600
 
 IMAGEM_NAVE = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'xwing.png')), (75, 70))
-IMAGEM_BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'bg_espaco.jpg')), (1200, 600))
+IMAGEM_BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'bg_espaco.jpg')), (TELA_LARGURA, TELA_ALTURA))
 IMAGEM_METEORO = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'meteoro.png')), (70, 45))
 IMAGEM_LASER = pygame.transform.scale(pygame.image.load(os.path.join('imgs', 'laser.png')), (20, 20))
 
@@ -24,6 +24,8 @@ class Nave:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.lasers = []
+        self.remover_lasers = []
 
     def mover_p_cima(self):
         self.y -= 15
@@ -34,12 +36,17 @@ class Nave:
     def mover_p_direita(self):
         self.x += 15
 
-    def mover_p_esquerda(self):  # fazer uma velocidade menor do que a da direita
+    def mover_p_esquerda(self):
         self.x -= 15
 
     def desenhar(self, tela):
         imagem = self.imagem
         tela.blit(imagem, (self.x, self.y))
+
+    def atirar(self, laser):
+        """Idéia: associar uma lista de lasers para cada nave"""
+        # lembrar de destruir e tirar o laser da lista ao passar da tela ou colidir com meteoro
+        self.lasers.append(Laser(self))
 
     def get_mask(self):
         return pygame.mask.from_surface(self.imagem)
@@ -65,7 +72,7 @@ class Meteoro:
     def colidir(self, objeto):
         objeto_mask = objeto.get_mask()
         meteoro_mask = self.get_mask()
-        colidiu = objeto_mask.overlap(meteoro_mask, (self.x - objeto.x, self.y - objeto.y))  # True ou False (?)
+        colidiu = objeto_mask.overlap(meteoro_mask, (self.x - objeto.x, self.y - objeto.y))  # True ou False
         return colidiu
 
 
@@ -77,7 +84,7 @@ class Laser:
         self.y = round(nave.imagem.get_height() / 2 + nave.y - 7)
 
     def mover(self):
-        self.x += 25  # testar essa velocidade
+        self.x += 25
 
     def desenhar(self, tela):
         imagem = self.imagem
@@ -87,14 +94,16 @@ class Laser:
         return pygame.mask.from_surface(self.imagem)
 
 
-def desenhar_na_tela(tela, bg, nave, meteoros, lasers, pontos):
+def desenhar_na_tela(tela, bg, nave, meteoros, pontos):
     tela.blit(bg, (0, 0))
     nave.desenhar(tela)
     # desenha cada meteoro na tela
     for meteoro in meteoros:
         meteoro.desenhar(tela)
-    for laser in lasers:
+
+    for laser in nave.lasers:
         laser.desenhar(tela)
+
 
     texto = FONTE_PONTOS.render(f"Pontuação: {pontos}", 1, (255, 255, 255))
     tela.blit(texto, (TELA_LARGURA - 10 - texto.get_width(), 10))
@@ -110,19 +119,17 @@ def main():
     # Iniciando a nave
     xwing = Nave(300, 300)
 
-    # Criando meteoros
+    # Criando lista de meteoros
     meteoros = []
 
-    # Criando lasers
-    lasers = []
 
     # Variáveis para controlar a repetição da tecla
     w_pressionada, s_pressionada, d_pressionada, a_pressionada = False, False, False, False
     repeat_interval = 10  # Intervalo em milissegundos para repetição
     last_key_repeat_time = 0
 
-    cont_met = 40  # contador de frames p ajudar na criação de meteoros
-    cont_laser = 20
+    cont_met = 40  # contador de frames p ajudar na criação de meteoros (1 meteóro a cada 40 iterações ou frames (?))
+    cont_laser = 20  # 1 laser a cada 20 iterações ou frames (?)
     pontos = 0
     rodando = True
     while rodando:
@@ -133,7 +140,7 @@ def main():
                 quit()
             elif evento.type == pygame.KEYDOWN:
                 # Verifica se a tecla pressionada é a tecla desejada
-                if evento.key == pygame.K_w:  # ir p cima
+                if evento.key == pygame.K_w:
                     w_pressionada = True
                 if evento.key == pygame.K_s:
                     s_pressionada = True
@@ -142,7 +149,7 @@ def main():
                 if evento.key == pygame.K_a:
                     a_pressionada = True
             elif evento.type == pygame.KEYUP:
-                if evento.key == pygame.K_w:  # ir p cima
+                if evento.key == pygame.K_w:
                     w_pressionada = False
                 if evento.key == pygame.K_s:
                     s_pressionada = False
@@ -168,31 +175,34 @@ def main():
         # criar meteoros a cada (intervalo de tempo)
         if cont_met >= 40:
             cont_met = 0
-            meteoros.append(Meteoro(1200))
+            meteoros.append(Meteoro(TELA_LARGURA))
         # cada meteoro da lista meteoros se move
         for meteoro in meteoros:
             meteoro.mover_p_esquerda()
-        # tira os meteoros da lista
+
+        # tira os meteoros da lista se passarem do limite da tela (p esquerda, óbvio)
         remover_meteoros = []
         for meteoro in meteoros:
             if meteoro.x <= meteoro.imagem.get_width() * (-1):
                 remover_meteoros.append(meteoro)
         for meteoro in remover_meteoros:
             meteoros.remove(meteoro)
+
         # verificar colisao com laser e ja remover o meteoro e o laser
         remover_meteoros = []
-        remover_lasers = []
         for meteoro in meteoros:
-            for laser in lasers:
+            for laser in xwing.lasers:
                 if meteoro.colidir(laser):
                     pontos += 1
                     remover_meteoros.append(meteoro)
-                    remover_lasers.append(laser)
+                    xwing.remover_lasers.append(laser)
         for meteoro in remover_meteoros:
             meteoros.remove(meteoro)
-        for laser in remover_lasers:
-            lasers.remove(laser)
-        # verificar colisao com nave
+        for laser in xwing.remover_lasers:
+            xwing.lasers.remove(laser)
+        xwing.remover_lasers = []
+
+        # verificar colisao de meteoro com nave
         for meteoro in meteoros:
             if meteoro.colidir(xwing):
                 rodando = False
@@ -200,17 +210,18 @@ def main():
         # criar lasers de tempo em tempo
         if cont_laser >= 20:
             cont_laser = 0
-            lasers.append(Laser(xwing))
+            xwing.lasers.append(Laser(xwing))
         # cada laser se move
-        for laser in lasers:
+        for laser in xwing.lasers:
             laser.mover()
-        # remove os lasers da lista
-        remover_lasers = []
-        for laser in lasers:
-            if laser.x >= 1185:
-                remover_lasers.append(laser)
-        for laser in remover_lasers:
-            lasers.remove(laser)
+
+        # remove os lasers da lista se passarem do limite da tela (p direita, óbvio)
+        for laser in xwing.lasers:
+            if laser.x >= TELA_LARGURA:
+                xwing.remover_lasers.append(laser)
+        for laser in xwing.remover_lasers:
+            xwing.lasers.remove(laser)
+        xwing.remover_lasers = []
 
         # delimitar a posição da nave
         if xwing.x >= TELA_LARGURA - xwing.imagem.get_width():
@@ -222,7 +233,7 @@ def main():
         if xwing.y <= -xwing.imagem.get_height()/2:
             xwing.y = -xwing.imagem.get_height()/2
 
-        # verifica se algum meteoro passou até o final
+        # verifica se algum meteoro passou até o final e já encerra o jogo se passou
         for meteoro in meteoros:
             if meteoro.x == 0:
                 rodando = False
@@ -231,7 +242,7 @@ def main():
         cont_met += 1
         cont_laser += 1
         pygame.time.Clock().tick(30)  # 30 fps
-        desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros, lasers, pontos)
+        desenhar_na_tela(tela, IMAGEM_BACKGROUND, xwing, meteoros, pontos)
 
 
 if __name__ == '__main__':
